@@ -1,0 +1,50 @@
+{
+  "name": "turnos-backend",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de turnos - Backend",
+  "main": "/dist/app.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc --build",
+    "start": "node ./dist/app.js",
+    "start:dev": "nodemon ./src/app.ts",
+    "docker:build": "docker build -t turnos-backend .",
+    "docker:run": "docker run -p 3001:3001 turnos-backend"
+  },
+  "keywords": [
+    "turnos",
+    "citas",
+    "reservas",
+    "nodejs",
+    "typescript"
+  ],
+  "author": "Javier Fernandez",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "joi": "^18.0.1",
+    "moment": "^2.30.1",
+    "mongoose": "^8.19.2",
+    "nodemailer": "^7.0.10",
+    "stripe": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.9.2",
+    "@types/nodemailer": "^7.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
