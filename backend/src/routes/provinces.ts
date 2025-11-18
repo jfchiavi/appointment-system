@@ -1,10 +1,15 @@
-// src/routes/provinces.ts
+// routes/provinces.ts
 import { Router } from 'express';
-import { getProvinces, createProvince } from '../controllers/provinceController.ts';
+import { 
+  getProvinces, 
+  createProvince, 
+  getProvinceById 
+} from '../controllers/provinceController.ts';
 
 const router = Router();
 
 router.get('/', getProvinces);
 router.post('/', createProvince);
+router.get('/:id', getProvinceById);
 
 export default router;

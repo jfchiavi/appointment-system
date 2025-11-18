@@ -2,14 +2,12 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
-    // "target": "ES2020",
-    // "module": "commonjs",
-    //"lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "moduleResolution": "bundler",
-    //"allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": true, // Allows importing TypeScript files without specifying the extension
+    "noEmit": true, // Do not emit outputs
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -29,6 +27,6 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

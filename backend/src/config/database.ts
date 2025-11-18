@@ -4,12 +4,25 @@ import { config } from './environment.ts';
 
 export const connectDatabase = async (): Promise<void> => {
   try {
-    await mongoose.connect(config.database.uri);
-    console.log('✅ Conectado a la base de datos MongoDB');
+      // Configurar Mongoose para evitar warnings
+      mongoose.set('strictQuery', true);
+      mongoose.set('bufferCommands', false);
+    
+      await mongoose.connect(config.database.uri, {
+        // Opciones para evitar warnings
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      });
+      console.log('✅ Conectado a MongoDB con Mongoose');
   } catch (error) {
-    console.error('❌ Error conectando a la base de datos:', error);
-    process.exit(1);
+      console.error('❌ Error conectando a la base de datos:', error);
+      process.exit(1);
   }
+};
+
+export const disconnectDatabase = async (): Promise<void> => {
+  await mongoose.disconnect();
 };
 
 // Manejo de eventos de conexión

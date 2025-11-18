@@ -1,10 +1,20 @@
-// src/controllers/branchController.ts
+// controllers/branchController.ts
 import type { Request, Response } from 'express';
 import { Branch } from '../models/Branch.ts';
+import { Province } from '../models/Province.ts';
 
 export const getBranchesByProvince = async (req: Request, res: Response) => {
   try {
     const { provinceId } = req.params;
+    
+    // Verificar que la provincia existe
+    const province = await Province.findById(provinceId);
+    if (!province) {
+      return res.status(404).json({
+        success: false,
+        message: 'Provincia no encontrada'
+      });
+    }
     
     const branches = await Branch.find({ 
       provinceId, 
@@ -35,7 +45,7 @@ export const getBranchDetails = async (req: Request, res: Response) => {
       .populate('provinceId', 'name');
     
     if (!branch) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: 'Sucursal no encontrada'
       });
@@ -52,5 +62,27 @@ export const getBranchDetails = async (req: Request, res: Response) => {
       error: error instanceof Error ? error.message : 'Error desconocido'
     });
   }
-  return;
+};
+
+export const createBranch = async (req: Request, res: Response) => {
+  try {
+    const branchData = req.body;
+    
+    const branch = new Branch(branchData);
+    await branch.save();
+    
+    // Populate para devolver datos completos
+    await branch.populate('provinceId', 'name');
+    
+    res.status(201).json({
+      success: true,
+      data: branch
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al crear sucursal',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
 };

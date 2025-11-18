@@ -3,11 +3,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+//cadena de conexion standart
+//mongodb://myDatabaseUser:D1fficultP%40ssw0rd@mongodb0.example.com:27017,mongodb1.example.com:27017,mongodb2.example.com:27017/?authSource=admin&replicaSet=myRepl
 
 export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3001'),
   database: {
+    dbName: process.env.DATABASE_NAME || 'turnos-db',
     uri: process.env.DATABASE_URI || 'mongodb://localhost:27017/turnos-db'
   },
   jwt: {

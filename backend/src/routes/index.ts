@@ -7,6 +7,10 @@ import appointmentsRoutes from './appointments.ts';
 
 const router = Router();
 
+router.get('/', (req, res) => {
+    res.json([{id:1, name:'John Doe'}, {id:2, name:'Jane Smith'}]);
+});
+
 router.use('/provinces', provincesRoutes);
 router.use('/branches', branchesRoutes);
 router.use('/professionals', professionalsRoutes);

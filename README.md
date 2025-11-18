@@ -1,5 +1,5 @@
 # Arquitectura del Sistema
-## Stack Tecnológico Recomendado
+## Stack Tecnológico
 
 Backend: Node.js + Express + TypeScript
 
@@ -65,6 +65,66 @@ backend/
 ├── package.json
 ├── tsconfig.json
 ├── Dockerfile
+└── README.md
+```
+## Estructura del Frontend
+```
+frontend-web/
+├── public/
+│   ├── index.html
+│   ├── favicon.ico
+│   └── manifest.json
+├── src/
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Header.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   ├── LoadingSpinner.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   └── Button.tsx
+│   │   ├── appointment/
+│   │   │   ├── ProvinceSelector.tsx
+│   │   │   ├── BranchSelector.tsx
+│   │   │   ├── DateSelector.tsx
+│   │   │   ├── ProfessionalSelector.tsx
+│   │   │   ├── TimeSlotSelector.tsx
+│   │   │   ├── ClientInfoForm.tsx
+│   │   │   └── AppointmentSummary.tsx
+│   │   └── payment/
+│   │       ├── PaymentForm.tsx
+│   │       ├── PaymentSuccess.tsx
+│   │       └── StripeElements.tsx
+│   ├── pages/
+│   │   ├── Home.tsx
+│   │   ├── AppointmentFlow.tsx
+│   │   ├── AppointmentConfirmation.tsx
+│   │   └── NotFound.tsx
+│   ├── services/
+│   │   ├── api.ts
+│   │   ├── appointmentService.ts
+│   │   └── paymentService.ts
+│   ├── hooks/
+│   │   ├── useAppointment.ts
+│   │   ├── useApi.ts
+│   │   └── useLocalStorage.ts
+│   ├── contexts/
+│   │   └── AppointmentContext.tsx
+│   ├── types/
+│   │   └── index.ts
+│   ├── utils/
+│   │   ├── constants.ts
+│   │   ├── formatters.ts
+│   │   └── validators.ts
+│   ├── styles/
+│   │   └── index.css
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── package.json
+├── tsconfig.json
+├── tailwind.config.js
+├── vite.config.ts
+├── index.html
 └── README.md
 ```
 

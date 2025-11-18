@@ -1,3 +1,52 @@
+# Para ejecutar el frontend
+
+
+## Instalar dependencias
+```
+npm install
+```
+## Configurar variables de entorno
+```
+cp .env.example .env
+```
+## Ejecutar en desarrollo
+```
+npm run dev
+```
+## Construir para producción
+```
+npm run build
+```
+## Previsualizar build de producción
+```
+npm run preview
+```
+
+# Con Docker:
+```
+docker build -t frontend-web .
+docker run -p 3000:3000 frontend-web
+```
+## configuracion adicional en el settings.json de VS Code por errores de @apply y @tailwind
+Para configurar VS Code con settings.json, puedes abrir el archivo a través del menú Archivo > Preferencias > Configuración y hacer clic en el ícono de archivo en la esquina superior derecha, o usar la paleta de comandos (Ctrl+Shift+P o Cmd+Shift+P) y buscar "Abrir configuración de usuario (JSON)". Una vez que el archivo se abre, puedes añadir o modificar la configuración directamente en formato JSON. 
+```
+{
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html",
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
+}
+```
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

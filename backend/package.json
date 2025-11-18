@@ -9,7 +9,9 @@
     "start": "node ./dist/app.js",
     "start:dev": "nodemon ./src/app.ts",
     "docker:build": "docker build -t turnos-backend .",
-    "docker:run": "docker run -p 3001:3001 turnos-backend"
+    "docker:run": "docker run -p 3001:3001 turnos-backend",
+    "db:init": "ts-node --esm ./src/database/init.ts",
+    "db:seed": "ts-node --esm ./src/database/seed.ts"
   },
   "keywords": [
     "turnos",
@@ -39,6 +41,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
     "@types/node": "^24.9.2",
     "@types/nodemailer": "^7.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.2",

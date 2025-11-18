@@ -1,4 +1,4 @@
-// src/services/availabilityService.ts
+// services/availabilityService.ts (Versión más robusta)
 import { Professional } from '../models/Professional.ts';
 import { Appointment } from '../models/Appointment.ts';
 import moment from 'moment';
@@ -7,6 +7,14 @@ export interface TimeSlot {
   startTime: string;
   endTime: string;
   isAvailable: boolean;
+}
+
+interface WorkingHours {
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  breakStart?: string | null;
+  breakEnd?: string | null;
 }
 
 export class AvailabilityService {
@@ -18,25 +26,24 @@ export class AvailabilityService {
     }
 
     const targetDate = moment(date);
-    const dayOfWeek = targetDate.day(); // 0: Domingo, 1: Lunes, etc.
+    const dayOfWeek = targetDate.day();
 
-    // Obtener horario del profesional para ese día
+    // Obtener horario del profesional para ese día con tipado explícito
     const daySchedule = professional.workingHours.find(
-      wh => wh.dayOfWeek === dayOfWeek
+      (wh: WorkingHours) => wh.dayOfWeek === dayOfWeek
     );
 
     if (!daySchedule || !daySchedule.startTime) {
-      return []; // No trabaja ese día
+      return [];
     }
 
-    // Obtener citas existentes para esa fecha
+    // Obtener citas existentes
     const existingAppointments = await Appointment.find({
       professionalId,
       date: targetDate.toDate(),
       status: { $in: ['pending', 'confirmed'] }
     });
 
-    // Generar slots disponibles
     return this.generateTimeSlots(
       daySchedule.startTime,
       daySchedule.endTime,
@@ -52,14 +59,21 @@ export class AvailabilityService {
     endTime: string,
     duration: number,
     existingAppointments: any[],
-    breakStart?: string,
-    breakEnd?: string
+    breakStart?: string | null,
+    breakEnd?: string | null
   ): TimeSlot[] {
     const slots: TimeSlot[] = [];
     const start = moment(startTime, 'HH:mm');
     const end = moment(endTime, 'HH:mm');
-    const breakStartMoment = breakStart ? moment(breakStart, 'HH:mm') : null;
-    const breakEndMoment = breakEnd ? moment(breakEnd, 'HH:mm') : null;
+    
+    // Función helper para crear moment objects de forma segura
+    const createMoment = (timeString: string | null | undefined): moment.Moment | null => {
+      if (!timeString) return null;
+      return moment(timeString, 'HH:mm');
+    };
+    
+    const breakStartMoment = createMoment(breakStart);
+    const breakEndMoment = createMoment(breakEnd);
 
     let currentTime = start.clone();
 
@@ -67,19 +81,13 @@ export class AvailabilityService {
       const slotEnd = currentTime.clone().add(duration, 'minutes');
       
       // Verificar si el slot está dentro del horario de break
-      const isDuringBreak = breakStartMoment && breakEndMoment &&
-        currentTime < breakEndMoment && slotEnd > breakStartMoment;
+      const isDuringBreak = this.isDuringBreak(currentTime, slotEnd, breakStartMoment, breakEndMoment);
 
       if (!isDuringBreak && slotEnd <= end) {
         const slotStartStr = currentTime.format('HH:mm');
         const slotEndStr = slotEnd.format('HH:mm');
 
-        // Verificar si el slot está ocupado
-        const isOccupied = existingAppointments.some(appointment => {
-          const appStart = moment(appointment.startTime, 'HH:mm');
-          const appEnd = moment(appointment.endTime, 'HH:mm');
-          return currentTime < appEnd && slotEnd > appStart;
-        });
+        const isOccupied = this.isSlotOccupied(currentTime, slotEnd, existingAppointments);
 
         slots.push({
           startTime: slotStartStr,
@@ -92,6 +100,29 @@ export class AvailabilityService {
     }
 
     return slots;
+  }
+
+  private isDuringBreak(
+    slotStart: moment.Moment,
+    slotEnd: moment.Moment,
+    breakStart: moment.Moment | null,
+    breakEnd: moment.Moment | null
+  ): boolean {
+    if (!breakStart || !breakEnd) return false;
+    
+    return slotStart < breakEnd && slotEnd > breakStart;
+  }
+
+  private isSlotOccupied(
+    slotStart: moment.Moment,
+    slotEnd: moment.Moment,
+    existingAppointments: any[]
+  ): boolean {
+    return existingAppointments.some(appointment => {
+      const appStart = moment(appointment.startTime, 'HH:mm');
+      const appEnd = moment(appointment.endTime, 'HH:mm');
+      return slotStart < appEnd && slotEnd > appStart;
+    });
   }
 
   async isTimeSlotAvailable(
@@ -109,5 +140,15 @@ export class AvailabilityService {
     });
 
     return !existingAppointment;
+  }
+
+  async getProfessionalWorkingHours(professionalId: string, date: string) {
+    const professional = await Professional.findById(professionalId);
+    if (!professional) return null;
+
+    const targetDate = moment(date);
+    const dayOfWeek = targetDate.day();
+
+    return professional.workingHours.find((wh: WorkingHours) => wh.dayOfWeek === dayOfWeek);
   }
 }
