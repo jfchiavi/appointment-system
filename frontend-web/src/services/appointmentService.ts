@@ -6,7 +6,20 @@ import type { Province, Branch, Professional, TimeSlot, Appointment, ApiResponse
 export const appointmentService = {
   // Provincias
   getProvinces: async (): Promise<Province[]> => {
+    console.log('📍 FRONT: appointmentService.getProvinces()');
     const response = await api.get<ApiResponse<Province[]>>('/provinces');
+    return response.data.data;
+  },
+
+    // Turno
+  getAppointment: async (appointmentId: string): Promise<Appointment> => {
+    if (!appointmentId) {
+      throw new Error('appointmentId es requerido');
+    }
+
+    console.log('📍 getAppointment - appointmentId:', appointmentId);
+    
+    const response = await api.get<ApiResponse<Appointment>>(`/appointments/${appointmentId}`);
     return response.data.data;
   },
 
@@ -42,6 +55,12 @@ export const appointmentService = {
 
   // Disponibilidad
   getAvailableSlots: async (professionalId: string, date: string): Promise<TimeSlot[]> => {
+    // ✅ Validar parámetros antes de hacer la request
+    if (!professionalId || !date) {
+      throw new Error('professionalId y date son requeridos');
+    }
+    console.log('📍 Frontend - getAvailableSlots params:', { professionalId, date });
+
     const response = await api.get<ApiResponse<TimeSlot[]>>(
       `/appointments/availability/${professionalId}/${date}`
     );

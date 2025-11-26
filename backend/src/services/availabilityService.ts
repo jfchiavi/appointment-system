@@ -19,21 +19,37 @@ interface WorkingHours {
 
 export class AvailabilityService {
   async getAvailableSlots(professionalId: string, date: string): Promise<TimeSlot[]> {
+    // ✅ Validaciones adicionales
+    if (!professionalId || !date) {
+      throw new Error('professionalId y date son requeridos');
+    }
+    console.log('📍 AvailabilityService - professionalId:', professionalId);
+    console.log('📍 AvailabilityService - date:', date);
+
     const professional = await Professional.findById(professionalId);
     
     if (!professional) {
+      console.error('❌ Professional no encontrado:', professionalId);
       throw new Error('Profesional no encontrado');
     }
 
-    const targetDate = moment(date);
-    const dayOfWeek = targetDate.day();
+    console.log('📍 Professional encontrado:', professional.name);
+    console.log('📍 Working hours:', professional.workingHours);
+
+    const targetDate = moment(date); 
+    const dayOfWeek = targetDate.day(); // 0=Domingo, 1=Lunes, etc.
+    console.log('📍 Day of week (moment):', dayOfWeek);
+
+    console.log('📍 Day of week:', dayOfWeek, targetDate.format('dddd'));
 
     // Obtener horario del profesional para ese día con tipado explícito
     const daySchedule = professional.workingHours.find(
       (wh: WorkingHours) => wh.dayOfWeek === dayOfWeek
     );
-
+    console.log('📍 Day schedule encontrado:', daySchedule);
+    
     if (!daySchedule || !daySchedule.startTime) {
+      console.log('❌ No trabaja este día o no tiene horario');
       return [];
     }
 
@@ -44,7 +60,11 @@ export class AvailabilityService {
       status: { $in: ['pending', 'confirmed'] }
     });
 
-    return this.generateTimeSlots(
+    console.log('📍 Citas existentes:', existingAppointments.length);
+    console.log('📍 Citas:', existingAppointments);
+
+    // Generar slots disponibles
+    const availableSlots = this.generateTimeSlots(
       daySchedule.startTime,
       daySchedule.endTime,
       professional.appointmentDuration,
@@ -52,6 +72,10 @@ export class AvailabilityService {
       daySchedule.breakStart,
       daySchedule.breakEnd
     );
+    console.log('📍 Slots disponibles generados:', availableSlots.length);
+    console.log('📍 Slots:', availableSlots);
+
+    return availableSlots;
   }
 
   private generateTimeSlots(

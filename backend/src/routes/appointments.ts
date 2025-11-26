@@ -4,7 +4,8 @@ import {
   getAvailableSlots,
   createAppointment,
   //processPayment,
-  cancelAppointment
+  cancelAppointment,
+  getAppointmentDetails
 } from '../controllers/appointmentController.ts';
 
 const router = Router();
@@ -13,5 +14,6 @@ router.get('/availability/:professionalId/:date', getAvailableSlots);
 router.post('/', createAppointment);
 //router.post('/:appointmentId/payment', processPayment);
 router.put('/:appointmentId/cancel', cancelAppointment);
+router.get('/:appointmentId', getAppointmentDetails);
 
 export default router;

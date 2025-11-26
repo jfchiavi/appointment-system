@@ -16,6 +16,17 @@ export const DateSelector: React.FC = () => {
 
   const handleDateSelect = (date: Date) => {
     const dateString = format(date, 'yyyy-MM-dd');
+    const professionalId = state.appointmentData.professionalId;
+    
+    // ✅ Validar que professionalId existe
+    if (!professionalId) {
+      console.error('❌ professionalId es undefined');
+      return;
+    }
+
+    console.log('📍 DateSelector - professionalId:', professionalId);
+    console.log('📍 DateSelector - date:', dateString);
+
     setSelectedDate(dateString);
     actions.setDate(dateString);
     actions.loadAvailableSlots(state.appointmentData.professionalId, dateString);

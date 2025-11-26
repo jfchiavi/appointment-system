@@ -13,7 +13,18 @@ const emailService = new EmailService();
 export const getAvailableSlots = async (req: Request, res: Response) => {
   try {
     const { professionalId, date } = req.params;
-    
+   
+    // ✅ VALIDAR que los parámetros no sean undefined
+    if (!professionalId || !date) {
+      return res.status(400).json({
+        success: false,
+        message: 'professionalId y date son requeridos'
+      });
+    }
+
+    console.log('📍 appointmentController.getAvailableSlots - professionalId:', professionalId);
+    console.log('📍 appointmentController.getAvailableSlots - date:', date);
+
     // Verificar que el profesional existe
     const professional = await Professional.findById(professionalId);
     if (!professional) {
@@ -22,10 +33,10 @@ export const getAvailableSlots = async (req: Request, res: Response) => {
         message: 'Profesional no encontrado'
       });
     }
-    console.log("TODO: AppointmentController.getAvailableSlots - Date param:", date);
+
     const availableSlots = await availabilityService.getAvailableSlots(
       professional.id, 
-      date?"":""
+      date // ✅ Ahora es string, no undefined
     );
     
     res.json({
@@ -253,6 +264,16 @@ export const cancelAppointment = async (req: Request, res: Response) => {
 export const getAppointmentDetails = async (req: Request, res: Response) => {
   try {
     const { appointmentId } = req.params;
+    
+    // ✅ Validar appointmentId
+    if (!appointmentId) {
+      return res.status(400).json({
+        success: false,
+        message: 'appointmentId es requerido'
+      });
+    }
+
+    console.log('📍 getAppointmentDetails - appointmentId:', appointmentId);
 
     const appointment = await Appointment.findById(appointmentId)
       .populate([

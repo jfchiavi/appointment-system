@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PaymentSuccess } from '../components/payment/PaymentSuccess';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-//import { appointmentService } from '../services/appointmentService'; TODO: revisar ahora esta mockeado
+import { appointmentService } from '../services/appointmentService'; //TODO: revisar ahora esta mockeado
 import type { Appointment } from '../types/index';
 
 export const AppointmentConfirmation: React.FC = () => {
@@ -23,26 +23,28 @@ export const AppointmentConfirmation: React.FC = () => {
 
       try {
         // TODO: En una implementación real, harías una llamada a la API
-        // const appointmentData = await appointmentService.getAppointment(id);
+        const appointmentData = await appointmentService.getAppointment(id);
+        console.log('📍 Cita encontrada:', appointmentData);
         
         // Simulamos datos de la cita
-        const mockAppointment: Appointment = {
-          id: id,
-          clientName: 'Juan Pérez',
-          clientEmail: 'juan@example.com',
-          clientPhone: '+1234567890',
-          professionalId: 'prof-123',
-          branchId: 'branch-123',
-          date: new Date().toISOString(),
-          startTime: '14:00',
-          endTime: '14:30',
-          amount: 50,
-          status: 'confirmed',
-          paymentStatus: 'paid'
-        };
+        // const mockAppointment: Appointment = {
+        //   id: id,
+        //   clientName: 'Juan Pérez',
+        //   clientEmail: 'juan@example.com',
+        //   clientPhone: '+1234567890',
+        //   professionalId: 'prof-123',
+        //   branchId: 'branch-123',
+        //   date: new Date().toISOString(),
+        //   startTime: '14:00',
+        //   endTime: '14:30',
+        //   amount: 50,
+        //   status: 'confirmed',
+        //   paymentStatus: 'paid'
+        // };
 
-        setAppointment(mockAppointment);
+        setAppointment(appointmentData);
       } catch (err) {
+        console.error('📍 Error fetching appointment:', err);
         setError('Error al cargar los detalles de la cita');
         console.error('Error fetching appointment:', err);
       } finally {
