@@ -3,11 +3,11 @@ import type { Request, Response } from 'express';
 import { Appointment } from '../models/Appointment.ts';
 import { Professional } from '../models/Professional.ts';
 import { AvailabilityService } from '../services/availabilityService.ts';
-import { PaymentService } from '../services/paymentService.ts';
+//import { PaymentService } from '../services/paymentService.ts';
 import { EmailService } from '../services/emailService.ts';
 
 const availabilityService = new AvailabilityService();
-const paymentService = new PaymentService();
+//const paymentService = new PaymentService();
 const emailService = new EmailService();
 
 export const getAvailableSlots = async (req: Request, res: Response) => {
@@ -121,82 +121,82 @@ export const createAppointment = async (req: Request, res: Response) => {
   }
 };
 
-export const processPayment = async (req: Request, res: Response) => {
-  try {
-    const { appointmentId } = req.params;
-    const { paymentMethodId } = req.body;
+// export const processPayment = async (req: Request, res: Response) => {
+//   try {
+//     const { appointmentId } = req.params;
+//     const { paymentMethodId } = req.body;
 
-    const appointment = await Appointment.findById(appointmentId);
+//     const appointment = await Appointment.findById(appointmentId);
     
-    if (!appointment) {
-      return res.status(404).json({
-        success: false,
-        message: 'Cita no encontrada'
-      });
-    }
+//     if (!appointment) {
+//       return res.status(404).json({
+//         success: false,
+//         message: 'Cita no encontrada'
+//       });
+//     }
 
-    if (appointment.paymentStatus === 'paid') {
-      return res.status(400).json({
-        success: false,
-        message: 'La cita ya fue pagada'
-      });
-    }
+//     if (appointment.paymentStatus === 'paid') {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'La cita ya fue pagada'
+//       });
+//     }
 
-    // Procesar pago con Stripe
-    const paymentResult = await paymentService.processPayment(
-      appointment.amount,
-      paymentMethodId,
-      `Pago cita ${appointmentId}`
-    );
+//     // TODO: Procesar pago con Stripe
+//     const paymentResult = await paymentService.processPayment(
+//       appointment.amount,
+//       paymentMethodId,
+//       `Pago cita ${appointmentId}`
+//     );
 
-    if (paymentResult.success) {
-      // Actualizar estado de la cita con Mongoose
-      appointment.paymentStatus = 'paid';
-      appointment.status = 'confirmed';
-      appointment.stripePaymentIntentId = paymentResult.paymentIntentId;
-      await appointment.save();
+//     if (paymentResult.success) {
+//       // Actualizar estado de la cita con Mongoose
+//       appointment.paymentStatus = 'paid';
+//       appointment.status = 'confirmed';
+//       appointment.stripePaymentIntentId = paymentResult.paymentIntentId;
+//       await appointment.save();
 
-      // Populate para obtener datos completos
-      await appointment.populate([
-        {
-          path: 'professionalId',
-          select: 'name specialty'
-        },
-        {
-          path: 'branchId',
-          select: 'name address'
-        }
-      ]);
+//       // Populate para obtener datos completos
+//       await appointment.populate([
+//         {
+//           path: 'professionalId',
+//           select: 'name specialty'
+//         },
+//         {
+//           path: 'branchId',
+//           select: 'name address'
+//         }
+//       ]);
 
-      // Enviar email de confirmación de pago
-      await emailService.sendPaymentConfirmation(appointment);
+//       // Enviar email de confirmación de pago
+//       await emailService.sendPaymentConfirmation(appointment);
 
-      res.json({
-        success: true,
-        data: {
-          appointment,
-          paymentIntent: paymentResult.paymentIntent
-        },
-        message: 'Pago procesado exitosamente'
-      });
-    } else {
-      appointment.paymentStatus = 'failed';
-      await appointment.save();
+//       res.json({
+//         success: true,
+//         data: {
+//           appointment,
+//           paymentIntent: paymentResult.paymentIntent
+//         },
+//         message: 'Pago procesado exitosamente'
+//       });
+//     } else {
+//       appointment.paymentStatus = 'failed';
+//       await appointment.save();
 
-      res.status(400).json({
-        success: false,
-        message: 'Error en el pago',
-        error: paymentResult.error
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error al procesar pago',
-      error: error instanceof Error ? error.message : 'Error desconocido'
-    });
-  }
-};
+//       res.status(400).json({
+//         success: false,
+//         message: 'Error en el pago',
+//         error: paymentResult.error
+//       });
+//     }
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: 'Error al procesar pago',
+//       error: error instanceof Error ? error.message : 'Error desconocido'
+//     });
+//   }
+// };
 
 export const cancelAppointment = async (req: Request, res: Response) => {
   try {

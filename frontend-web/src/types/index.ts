@@ -1,12 +1,14 @@
 // src/types/index.ts
 export interface Province {
-  id: string;
+  _id?: string;    // ✅ Para Mongoose
+  id?: string;     // ✅ Para compatibilidad
   name: string;
   isActive: boolean;
 }
 
 export interface Branch {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   provinceId: string;
   address: string;
@@ -24,7 +26,8 @@ export interface BusinessHours {
 }
 
 export interface Professional {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   email: string;
   phone: string;

@@ -1,4 +1,4 @@
-// src/components/appointment/ProvinceSelector.tsx
+// components/appointment/ProvinceSelector.tsx
 import React, { useEffect } from 'react';
 import { useAppointment } from '../../hooks/useAppointment';
 import { Button } from '../common/Button';
@@ -7,11 +7,25 @@ import { LoadingSpinner } from '../common/LoadingSpinner';
 export const ProvinceSelector: React.FC = () => {
   const { state, actions } = useAppointment();
 
+  // ✅ CORREGIDO - useEffect con dependencias adecuadas
   useEffect(() => {
-    actions.loadProvinces();
-  }, []);
+    // Solo cargar provincias si no están ya cargadas
+    if (state.provinces.length === 0 && !state.loading) {
+      actions.loadProvinces();
+    }
+  }, [state.provinces.length, state.loading, actions.loadProvinces]);
 
   const handleProvinceSelect = (provinceId: string) => {
+    console.log('📍 ProvinceSelector - provinceId seleccionado:', provinceId); // ✅ DEBUG
+    console.log('📍 ProvinceSelector - provinceId tipo:', typeof provinceId); // ✅ DEBUG
+    // ✅ Asegurarse de que provinceId es un string válido
+    if (!provinceId || provinceId === 'undefined') {
+      console.error('❌ Province ID es inválido:', provinceId);
+      return;
+    }
+
+    console.log('✅ Province ID válido:', provinceId);
+    
     actions.setProvince(provinceId);
     actions.loadBranches(provinceId);
     actions.nextStep();
@@ -50,8 +64,8 @@ export const ProvinceSelector: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {state.provinces.map((province) => (
           <button
-            key={province.id}
-            onClick={() => handleProvinceSelect(province.id)}
+            key={province._id || province.id} // ✅ Manejar ambos casos (_id de Mongoose o id)
+            onClick={() => handleProvinceSelect(province._id || province.id!)} // ✅ Asegurar que se pasa un string válido
             className="p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-left"
           >
             <h3 className="font-semibold text-gray-900 text-lg">

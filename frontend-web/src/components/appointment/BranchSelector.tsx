@@ -40,7 +40,7 @@ export const BranchSelector: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {state.branches.map((branch) => (
           <div
-            key={branch.id}
+            key={branch._id|| branch.id!}
             className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
           >
             <h3 className="font-semibold text-gray-900 text-lg mb-3">
@@ -65,7 +65,7 @@ export const BranchSelector: React.FC = () => {
             </div>
 
             <Button
-              onClick={() => handleBranchSelect(branch.id)}
+              onClick={() => handleBranchSelect(branch._id|| branch.id!)}
               className="w-full mt-4"
             >
               Seleccionar Sucursal

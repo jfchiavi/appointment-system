@@ -1,18 +1,20 @@
 // src/controllers/provinceController.ts
 import type { Request, Response } from 'express';
 import { Province } from '../models/Province.ts';
+import { logger } from '../lib/logger.ts';
 
 export const getProvinces = async (req: Request, res: Response) => {
   try {
     const provinces = await Province.find({ isActive: true })
       .sort({ name: 1 })
       .select('name _id');
-    
+    logger.info('Ejecutando getProvinces en el Backend', provinces.length);
     res.json({
       success: true,
       data: provinces
     });
   } catch (error) {
+    logger.error('Error al obtener provincias', error);
     res.status(500).json({
       success: false,
       message: 'Error al obtener provincias',

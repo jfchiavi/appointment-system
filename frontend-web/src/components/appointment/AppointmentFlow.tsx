@@ -16,10 +16,12 @@ import { CheckCircle2 } from 'lucide-react';
 export const AppointmentFlow: React.FC = () => {
   const { state, actions } = useAppointment();
 
+  // ✅ Cargar provincias una sola vez al montar el componente
   useEffect(() => {
-    // Cargar provincias al montar el componente
-    actions.loadProvinces();
-  }, []);
+    if (state.provinces.length === 0 && !state.loading && state.currentStep === 1) {
+      actions.loadProvinces();
+    }
+  }, [state.provinces.length, state.loading, state.currentStep, actions.loadProvinces]);
 
   const steps = [
     { number: 1, title: 'Provincia', completed: state.currentStep > 1 },

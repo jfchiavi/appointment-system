@@ -9,6 +9,14 @@ export const ProfessionalSelector: React.FC = () => {
   const { state, actions } = useAppointment();
 
   const handleProfessionalSelect = (professionalId: string) => {
+    // ✅ Asegurarse de que professionalId es un string válido
+    if (!professionalId || professionalId === 'undefined') {
+      console.error('❌ professionalId es inválido:', professionalId);
+      return;
+    }
+
+    console.log('✅ professionalId válido:', professionalId);
+
     actions.setProfessional(professionalId);
     actions.nextStep();
   };
@@ -39,7 +47,7 @@ export const ProfessionalSelector: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {state.professionals.map((professional) => (
           <div
-            key={professional.id}
+          key={professional._id || professional.id}
             className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow text-center"
           >
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -60,7 +68,7 @@ export const ProfessionalSelector: React.FC = () => {
             </div>
 
             <Button
-              onClick={() => handleProfessionalSelect(professional.id)}
+              onClick={() => handleProfessionalSelect(professional._id || professional.id!)}
               className="w-full"
             >
               Seleccionar

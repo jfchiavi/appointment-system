@@ -2,6 +2,7 @@
 import { api } from './api';
 import type { Province, Branch, Professional, TimeSlot, Appointment, ApiResponse } from '../types';
 
+
 export const appointmentService = {
   // Provincias
   getProvinces: async (): Promise<Province[]> => {
@@ -11,6 +12,13 @@ export const appointmentService = {
 
   // Sucursales
   getBranchesByProvince: async (provinceId: string): Promise<Branch[]> => {
+    // ✅ Validar provinceId antes de hacer la llamada
+    if (!provinceId || provinceId === 'undefined') {
+      throw new Error('Province ID es requerido');
+    }
+
+    console.log('📍 appointmentService - getBranchesByProvince ID:', provinceId);
+    
     const response = await api.get<ApiResponse<Branch[]>>(`/branches/province/${provinceId}`);
     return response.data.data;
   },
@@ -22,6 +30,7 @@ export const appointmentService = {
 
   // Profesionales
   getProfessionalsByBranch: async (branchId: string): Promise<Professional[]> => {
+    console.log('📍 appointmentService - getProfessionalsByBranch ID:', branchId);
     const response = await api.get<ApiResponse<Professional[]>>(`/professionals/branch/${branchId}`);
     return response.data.data;
   },

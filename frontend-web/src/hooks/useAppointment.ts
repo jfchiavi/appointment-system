@@ -16,6 +16,7 @@ export const useAppointment = () => {
       const provinces = await appointmentService.getProvinces();
       dispatch({ type: 'SET_PROVINCES', payload: provinces });
     } catch (error) {
+      console.error('📍 Error en loadBranches:', error); // ✅ DEBUG
       dispatch({ type: 'SET_ERROR', payload: 'Error al cargar provincias' });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -23,6 +24,7 @@ export const useAppointment = () => {
   };
 
   const loadBranches = async (provinceId: string) => {
+    console.log('📍 useAppointment - loadBranches provinceId:', provinceId); // ✅ DEBUG
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const branches = await appointmentService.getBranchesByProvince(provinceId);
@@ -35,6 +37,7 @@ export const useAppointment = () => {
   };
 
   const loadProfessionals = async (branchId: string) => {
+    console.log('📍 useAppointment - loadBranches provinceId:', branchId); // ✅ DEBUG
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const professionals = await appointmentService.getProfessionalsByBranch(branchId);
