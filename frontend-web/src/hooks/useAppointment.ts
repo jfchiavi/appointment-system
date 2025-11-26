@@ -61,6 +61,41 @@ export const useAppointment = () => {
     }
   };
 
+  const createAppointment = async () => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      const appointmentData = {
+        clientName: state.appointmentData.clientInfo.name,
+        clientEmail: state.appointmentData.clientInfo.email,
+        clientPhone: state.appointmentData.clientInfo.phone,
+        professionalId: state.appointmentData.professionalId,
+        branchId: state.appointmentData.branchId,
+        date: state.appointmentData.date,
+        startTime: state.appointmentData.time,
+        endTime: state.appointmentData.time,
+        notes: state.appointmentData.clientInfo.notes,
+        status: 'confirmed' as const
+      };
+
+      console.log('📍 Creando cita:', appointmentData);
+      
+      const appointment = await appointmentService.createAppointment(appointmentData);
+      
+      console.log('📍 Cita creada exitosamente:', appointment);
+      
+      dispatch({ type: 'SET_APPOINTMENT_ID', payload: appointment.id || appointment._id || appointment._id! });
+      
+    } catch (error) {
+      console.error('📍 Error creando cita:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Error al crear la cita' });
+      throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
+// ✅ Funciones simples de estado - no necesitan async/await
   const nextStep = () => {
     dispatch({ type: 'SET_STEP', payload: state.currentStep + 1 });
   };
@@ -108,6 +143,7 @@ export const useAppointment = () => {
       loadBranches,
       loadProfessionals,
       loadAvailableSlots,
+      createAppointment,
       nextStep,
       prevStep,
       setStep,

@@ -11,6 +11,7 @@ interface AppointmentState {
   availableSlots: TimeSlot[];
   loading: boolean;
   error: string | null;
+  appointmentId: string | null;
 }
 
 type AppointmentAction =
@@ -21,6 +22,7 @@ type AppointmentAction =
   | { type: 'SET_BRANCHES'; payload: Branch[] }
   | { type: 'SET_PROFESSIONALS'; payload: Professional[] }
   | { type: 'SET_AVAILABLE_SLOTS'; payload: TimeSlot[] }
+  | { type: 'SET_APPOINTMENT_ID'; payload: string }
   | { type: 'SET_PROVINCE'; payload: string }
   | { type: 'SET_BRANCH'; payload: string }
   | { type: 'SET_PROFESSIONAL'; payload: string }
@@ -50,6 +52,7 @@ const initialState: AppointmentState = {
   availableSlots: [],
   loading: false,
   error: null,
+  appointmentId: null, // ✅ Nueva propiedad
 };
 
 const appointmentReducer = (state: AppointmentState, action: AppointmentAction): AppointmentState => {
@@ -68,6 +71,8 @@ const appointmentReducer = (state: AppointmentState, action: AppointmentAction):
       return { ...state, professionals: action.payload };
     case 'SET_AVAILABLE_SLOTS':
       return { ...state, availableSlots: action.payload };
+    case 'SET_APPOINTMENT_ID':
+      return {...state, appointmentId: action.payload};
     case 'SET_PROVINCE':
       return {
         ...state,

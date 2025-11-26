@@ -20,8 +20,15 @@ export const AppointmentSummary: React.FC = () => {
     return state.professionals.find(p => p.id === state.appointmentData.professionalId);
   };
 
-  const handleConfirm = () => {
-    actions.nextStep();
+  const handleConfirm = async () => {
+    try {
+      // ✅ Crear la cita directamente sin proceso de pago
+      await actions.createAppointment();
+      actions.nextStep(); // Ir a la página de confirmación
+    } catch (error) {
+      console.error('Error al confirmar cita:', error);
+      // Manejar error (podrías mostrar un toast o mensaje de error)
+    }
   };
 
   const handleBack = () => {
@@ -174,25 +181,6 @@ export const AppointmentSummary: React.FC = () => {
             )}
           </div>
         </div>
-
-        {/* Resumen de Pago */}
-        <div className="p-6 bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen de Pago</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Costo de consulta</span>
-              <span className="font-medium">$50.00</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Impuestos</span>
-              <span className="font-medium">$0.00</span>
-            </div>
-            <div className="flex justify-between pt-2 border-t border-gray-200">
-              <span className="text-lg font-semibold">Total</span>
-              <span className="text-lg font-semibold">$50.00</span>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="flex justify-between mt-8">
@@ -200,13 +188,13 @@ export const AppointmentSummary: React.FC = () => {
           Volver
         </Button>
         <Button onClick={handleConfirm}>
-          Confirmar y Pagar
+          Confirmar Cita
         </Button>
       </div>
 
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-sm text-blue-800 text-center">
-          💡 Al confirmar, serás redirigido a nuestro sistema de pago seguro para completar la reserva.
+          📧 Al confirmar, recibirás un email con los detalles de tu cita.
         </p>
       </div>
     </div>

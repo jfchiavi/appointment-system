@@ -53,7 +53,8 @@ export interface TimeSlot {
 }
 
 export interface Appointment {
-  id?: string;
+  _id?: string;    // ✅ Para Mongoose
+  id?: string;     // ✅ Para compatibilidad
   clientName: string;
   clientEmail: string;
   clientPhone: string;
@@ -62,10 +63,10 @@ export interface Appointment {
   date: string;
   startTime: string;
   endTime: string;
-  amount: number;
+  amount?: number;
   notes?: string;
   status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  paymentStatus?: 'pending' | 'paid' | 'failed' | 'refunded';
+  // paymentStatus?: 'pending' | 'paid' | 'failed' | 'refunded';
 }
 
 export interface AppointmentData {

@@ -17,10 +17,6 @@ export const config = {
     secret: process.env.JWT_SECRET || 'secret-key',
     expiresIn: process.env.JWT_EXPIRES_IN || '7d'
   },
-  stripe: {
-    secretKey: process.env.STRIPE_SECRET_KEY || '',
-    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || ''
-  },
   email: {
     host: process.env.EMAIL_HOST || '',
     port: parseInt(process.env.EMAIL_PORT || '587'),

@@ -1,11 +1,10 @@
-// src/components/payment/PaymentSuccess.tsx
+// components/appointment/AppointmentSuccess.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../common/Button';
-import { CheckCircle, Calendar, Download, Share2 } from 'lucide-react';
-//import { CheckCircle, Calendar, Download, Mail, Share2 } from 'lucide-react'; TODO: revisar por que no se usa Mail
+import { CheckCircle, Calendar, Download, Mail, Share2, MapPin, User } from 'lucide-react';
 
-interface PaymentSuccessProps {
+interface AppointmentSuccessProps {
   appointmentId: string;
   appointmentDetails: {
     clientName: string;
@@ -13,34 +12,15 @@ interface PaymentSuccessProps {
     time: string;
     professionalName: string;
     branchName: string;
-    amount: number;
+    amount?: number;
   };
 }
 
-export const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
+export const AppointmentSuccess: React.FC<AppointmentSuccessProps> = ({
   appointmentId,
   appointmentDetails
 }) => {
   const navigate = useNavigate();
-
-  const handleDownloadPDF = () => {
-    // En una implementación real, generarías un PDF
-    console.log('Descargando comprobante...');
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Comprobante de Cita',
-        text: `Mi cita para el ${appointmentDetails.date} a las ${appointmentDetails.time}`,
-        url: window.location.href,
-      });
-    } else {
-      // Fallback para copiar al portapapeles
-      navigator.clipboard.writeText(window.location.href);
-      alert('Enlace copiado al portapapeles');
-    }
-  };
 
   const handleNewAppointment = () => {
     navigate('/reservar');
@@ -49,6 +29,13 @@ export const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
   const handleBackToHome = () => {
     navigate('/');
   };
+
+  const formattedDate = new Date(appointmentDetails.date).toLocaleDateString('es-ES', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12">
@@ -59,10 +46,10 @@ export const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            ¡Pago Completado!
+            ¡Cita Confirmada!
           </h1>
           <p className="text-gray-600">
-            Tu cita ha sido confirmada y el pago procesado exitosamente
+            Tu cita ha sido agendada exitosamente
           </p>
         </div>
 
@@ -72,70 +59,42 @@ export const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
             Detalles de tu cita
           </h2>
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex justify-between">
               <span className="text-gray-600">Número de reserva:</span>
               <span className="font-mono font-medium">{appointmentId}</span>
             </div>
             
-            <div className="flex justify-between">
+            <div className="flex items-center">
+              <User className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Paciente:</span>
-              <span className="font-medium">{appointmentDetails.clientName}</span>
+              <span className="font-medium ml-2">{appointmentDetails.clientName}</span>
             </div>
             
-            <div className="flex justify-between">
+            <div className="flex items-center">
+              <Calendar className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Fecha:</span>
-              <span className="font-medium">
-                {new Date(appointmentDetails.date).toLocaleDateString('es-ES', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </span>
+              <span className="font-medium ml-2">{formattedDate}</span>
             </div>
             
-            <div className="flex justify-between">
+            <div className="flex items-center">
+              <Calendar className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Hora:</span>
-              <span className="font-medium">{appointmentDetails.time}</span>
+              <span className="font-medium ml-2">{appointmentDetails.time}</span>
             </div>
             
-            <div className="flex justify-between">
+            <div className="flex items-center">
+              <User className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Profesional:</span>
-              <span className="font-medium">{appointmentDetails.professionalName}</span>
+              <span className="font-medium ml-2">{appointmentDetails.professionalName}</span>
             </div>
             
-            <div className="flex justify-between">
+            <div className="flex items-center">
+              <MapPin className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Sucursal:</span>
-              <span className="font-medium">{appointmentDetails.branchName}</span>
-            </div>
-            
-            <div className="flex justify-between pt-3 border-t border-gray-200">
-              <span className="text-gray-600">Monto pagado:</span>
-              <span className="font-semibold text-lg">${appointmentDetails.amount.toFixed(2)}</span>
+              <span className="font-medium ml-2">{appointmentDetails.branchName}</span>
             </div>
           </div>
-        </div>
-
-        {/* Acciones */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <Button
-            variant="outline"
-            onClick={handleDownloadPDF}
-            className="flex items-center justify-center"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Descargar Comprobante
-          </Button>
-          
-          <Button
-            variant="outline"
-            onClick={handleShare}
-            className="flex items-center justify-center"
-          >
-            <Share2 className="w-4 h-4 mr-2" />
-            Compartir
-          </Button>
         </div>
 
         {/* Información importante */}
@@ -149,7 +108,7 @@ export const PaymentSuccess: React.FC<PaymentSuccessProps> = ({
           </ul>
         </div>
 
-        {/* Botones de acción principal */}
+        {/* Botones de acción */}
         <div className="flex flex-col sm:flex-row gap-4">
           <Button
             onClick={handleNewAppointment}

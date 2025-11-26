@@ -41,24 +41,20 @@ export const AppointmentSchema = new Schema({
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'cancelled', 'completed', 'no-show'],
-    default: 'pending'
+    default: 'confirmed'
   },
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'paid', 'failed', 'refunded'],
-    default: 'pending'
-  },
+  // serviceId: { //TODO: relacionar con servicio
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'Service',
+  //   required: true
+  // },
   amount: {
     type: Number,
-    required: true,
     min: 0
   },
   notes: {
     type: String,
     trim: true
-  },
-  stripePaymentIntentId: {
-    type: String
   }
 }, {
   timestamps: true

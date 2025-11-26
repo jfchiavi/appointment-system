@@ -73,14 +73,6 @@ export const appointmentService = {
     return response.data.data;
   },
 
-  processPayment: async (appointmentId: string, paymentMethodId: string): Promise<any> => {
-    const response = await api.post<ApiResponse<any>>(
-      `/appointments/${appointmentId}/payment`,
-      { paymentMethodId }
-    );
-    return response.data.data;
-  },
-
   cancelAppointment: async (appointmentId: string, reason?: string): Promise<void> => {
     await api.put(`/appointments/${appointmentId}/cancel`, { reason });
   },

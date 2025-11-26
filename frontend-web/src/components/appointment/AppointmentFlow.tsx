@@ -7,8 +7,8 @@ import { ProfessionalSelector } from './ProfessionalSelector';
 import { DateSelector } from './DateSelector';
 import { TimeSlotSelector } from './TimeSlotSelector';
 import { ClientInfoForm } from './ClientInfoForm';
+import { AppointmentConfirmation } from '../../pages/AppointmentConfirmation';
 import { AppointmentSummary } from './AppointmentSummary';
-import { PaymentForm } from '../payment/PaymentForm';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { CheckCircle2 } from 'lucide-react';
 //import { ChevronRight, CheckCircle2 } from 'lucide-react';
@@ -31,7 +31,7 @@ export const AppointmentFlow: React.FC = () => {
     { number: 5, title: 'Horario', completed: state.currentStep > 5 },
     { number: 6, title: 'Datos', completed: state.currentStep > 6 },
     { number: 7, title: 'Resumen', completed: state.currentStep > 7 },
-    { number: 8, title: 'Pago', completed: state.currentStep > 8 },
+    { number: 8, title: 'Confirmación', completed: state.currentStep > 8 },
   ];
 
   const renderStep = () => {
@@ -51,7 +51,7 @@ export const AppointmentFlow: React.FC = () => {
       case 7:
         return <AppointmentSummary />;
       case 8:
-        return <PaymentForm />;
+        return <AppointmentConfirmation />;
       default:
         return <ProvinceSelector />;
     }

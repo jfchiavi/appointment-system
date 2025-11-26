@@ -1,59 +1,66 @@
 // src/pages/AppointmentConfirmation.tsx
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { PaymentSuccess } from '../components/payment/PaymentSuccess';
+import { useNavigate } from 'react-router-dom';
+import { AppointmentSuccess } from '../components/appointment/AppointmentSuccess';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { appointmentService } from '../services/appointmentService'; //TODO: revisar ahora esta mockeado
+import { appointmentService } from '../services/appointmentService';
+import { useAppointment } from '../hooks/useAppointment';
 import type { Appointment } from '../types/index';
 
 export const AppointmentConfirmation: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { state } = useAppointment(); // ✅ Usar el hook para obtener el estado
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAppointment = async () => {
-      if (!id) {
+            // ✅ Usar el appointmentId del contexto
+      const appointmentId = state.appointmentId;
+
+      if (!appointmentId) {
         setError('ID de cita no válido');
         setLoading(false);
         return;
       }
 
       try {
-        // TODO: En una implementación real, harías una llamada a la API
-        const appointmentData = await appointmentService.getAppointment(id);
+        console.log('📍 Buscando cita con ID:', appointmentId);
+        const appointmentData = await appointmentService.getAppointment(appointmentId);
         console.log('📍 Cita encontrada:', appointmentData);
         
-        // Simulamos datos de la cita
-        // const mockAppointment: Appointment = {
-        //   id: id,
-        //   clientName: 'Juan Pérez',
-        //   clientEmail: 'juan@example.com',
-        //   clientPhone: '+1234567890',
-        //   professionalId: 'prof-123',
-        //   branchId: 'branch-123',
-        //   date: new Date().toISOString(),
-        //   startTime: '14:00',
-        //   endTime: '14:30',
-        //   amount: 50,
-        //   status: 'confirmed',
-        //   paymentStatus: 'paid'
-        // };
-
         setAppointment(appointmentData);
       } catch (err) {
         console.error('📍 Error fetching appointment:', err);
         setError('Error al cargar los detalles de la cita');
-        console.error('Error fetching appointment:', err);
+
+        // Fallback para desarrollo
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📍 Usando datos mock para desarrollo');
+          const mockAppointment: Appointment = {
+            id: appointmentId,
+            clientName: state.appointmentData.clientInfo.name,
+            clientEmail: state.appointmentData.clientInfo.email,
+            clientPhone: state.appointmentData.clientInfo.phone,
+            professionalId: state.appointmentData.professionalId,
+            branchId: state.appointmentData.branchId,
+            date: state.appointmentData.date,
+            startTime: state.appointmentData.time,
+            endTime: state.appointmentData.time,
+            status: 'confirmed'
+          };
+          setAppointment(mockAppointment);
+          setError(null);
+        }
+
       } finally {
         setLoading(false);
       }
     };
 
     fetchAppointment();
-  }, [id]);
+  }, [state.appointmentId, state.appointmentData]);
 
   if (loading) {
     return (
@@ -98,8 +105,8 @@ export const AppointmentConfirmation: React.FC = () => {
   };
 
   return (
-    <PaymentSuccess
-      appointmentId={appointment.id!}
+    <AppointmentSuccess // ✅ Usar el nuevo componente
+      appointmentId={appointment.id || appointment._id || 'N/A'}
       appointmentDetails={appointmentDetails}
     />
   );
