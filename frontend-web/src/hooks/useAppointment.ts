@@ -133,6 +133,7 @@ export const useAppointment = () => {
   };
 
   const resetAppointment = () => {
+    console.log('📍 Reseteando estado de appointment...');
     dispatch({ type: 'RESET_APPOINTMENT' });
   };
 

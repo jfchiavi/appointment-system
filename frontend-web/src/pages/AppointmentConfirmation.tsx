@@ -9,10 +9,17 @@ import type { Appointment } from '../types/index';
 
 export const AppointmentConfirmation: React.FC = () => {
   const navigate = useNavigate();
-  const { state } = useAppointment(); // ✅ Usar el hook para obtener el estado
+  const { state, actions } = useAppointment(); // ✅ Usar el hook para obtener el estado, ✅ Obtener actions también
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+    // ✅ Función para limpiar y empezar nueva cita
+  const handleNewAppointment = () => {
+    console.log('📍 Limpiando datos para nueva cita...');
+    actions.resetAppointment(); // ✅ Limpiar el estado
+    navigate('/reservar'); // ✅ Navegar al inicio del flujo
+  };
 
   useEffect(() => {
     const fetchAppointment = async () => {
@@ -84,23 +91,31 @@ export const AppointmentConfirmation: React.FC = () => {
           <p className="text-gray-600 mb-6">
             {error || 'No se pudo encontrar la cita'}
           </p>
-          <button
-            onClick={() => navigate('/')}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Volver al Inicio
-          </button>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => handleNewAppointment}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Nueva Cita
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Volver al Inicio
+            </button>
+          </div>
         </div>
       </div>
     );
   }
-
+//TODO: revisar professionalName y branchName si vienen de la DB
   const appointmentDetails = {
     clientName: appointment.clientName,
     date: appointment.date,
     time: appointment.startTime,
-    professionalName: 'Dr. Carlos Rodríguez', // En real, buscarías el nombre del profesional
-    branchName: 'Sucursal Centro', // En real, buscarías el nombre de la sucursal
+    professionalName: 'Profesional test', // En real, buscarías el nombre del profesional
+    branchName: 'Sucursal test', // En real, buscarías el nombre de la sucursal
     amount: appointment.amount
   };
 
@@ -108,6 +123,7 @@ export const AppointmentConfirmation: React.FC = () => {
     <AppointmentSuccess // ✅ Usar el nuevo componente
       appointmentId={appointment.id || appointment._id || 'N/A'}
       appointmentDetails={appointmentDetails}
+      onNewAppointment={handleNewAppointment} // ✅ Pasar el callback
     />
   );
 };

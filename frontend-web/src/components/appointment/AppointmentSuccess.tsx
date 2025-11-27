@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../common/Button';
-import { CheckCircle, Calendar, Download, Mail, Share2, MapPin, User } from 'lucide-react';
+import { CheckCircle, Calendar, MapPin, User } from 'lucide-react';
 
 interface AppointmentSuccessProps {
   appointmentId: string;
@@ -14,16 +14,25 @@ interface AppointmentSuccessProps {
     branchName: string;
     amount?: number;
   };
+  onNewAppointment?: () => void; // ✅ Nueva prop para callback
 }
 
 export const AppointmentSuccess: React.FC<AppointmentSuccessProps> = ({
   appointmentId,
-  appointmentDetails
+  appointmentDetails,
+  onNewAppointment // ✅ Recibir callback
 }) => {
   const navigate = useNavigate();
 
   const handleNewAppointment = () => {
-    navigate('/reservar');
+    console.log('Iniciando nueva cita onNewAppointment...', onNewAppointment);
+    if (onNewAppointment) {
+      // ✅ Si hay callback, usarlo
+      onNewAppointment();
+    } else {  
+      // ✅ Fallback: navegar directamente
+      navigate('/reservar');
+    }
   };
 
   const handleBackToHome = () => {

@@ -63,35 +63,6 @@ export class EmailService {
     }
   }
 
-  async sendPaymentConfirmation(appointment: any): Promise<void> {
-    try {
-      const appointmentData = appointment.toObject ? appointment.toObject() : appointment;
-      
-      const emailData: AppointmentEmailData = {
-        clientName: appointmentData.clientName,
-        clientEmail: appointmentData.clientEmail,
-        date: appointmentData.date,
-        startTime: appointmentData.startTime,
-        endTime: appointmentData.endTime,
-        amount: appointmentData.amount,
-        professionalName: appointmentData.professionalId?.name || 'el profesional',
-        branchName: appointmentData.branchId?.name || 'la sucursal'
-      };
-
-      const mailOptions = {
-        from: config.email.user,
-        to: appointmentData.clientEmail,
-        subject: 'Confirmación de Pago - Cita Confirmada',
-        html: this.generatePaymentConfirmationEmail(emailData)
-      };
-
-      await this.transporter.sendMail(mailOptions);
-      console.log(`✅ Email de confirmación de pago enviado a: ${appointmentData.clientEmail}`);
-    } catch (error) {
-      console.error('❌ Error enviando email de confirmación de pago:', error);
-    }
-  }
-
   async sendAppointmentCancellation(appointment: any, reason?: string): Promise<void> {
     try {
       const appointmentData = appointment.toObject ? appointment.toObject() : appointment;
@@ -244,56 +215,7 @@ export class EmailService {
     `;
   }
 
-  private generatePaymentConfirmationEmail(data: AppointmentEmailData): string {
-    const formattedDate = new Date(data.date).toLocaleDateString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
-          .header { background: #2196F3; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
-          .content { padding: 20px; }
-          .footer { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
-          .payment-details { background: #f0f8ff; padding: 15px; border-radius: 5px; margin: 15px 0; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>💳 Pago Confirmado</h1>
-          </div>
-          <div class="content">
-            <p>Hola <strong>${data.clientName}</strong>,</p>
-            <p>Tu pago ha sido procesado exitosamente y tu cita está confirmada.</p>
-            
-            <div class="payment-details">
-              <h3>📋 Resumen del Pago</h3>
-              <p><strong>Cita con:</strong> ${data.professionalName}</p>
-              <p><strong>Fecha:</strong> ${formattedDate}</p>
-              <p><strong>Hora:</strong> ${data.startTime}</p>
-              <p><strong>Monto pagado:</strong> $${data.amount}</p>
-              <p><strong>Estado:</strong> <span style="color: #4CAF50;">✅ Confirmado</span></p>
-            </div>
-
-            <p>Te esperamos en tu cita. Por favor llega 15 minutos antes.</p>
-          </div>
-          <div class="footer">
-            <p>Gracias por confiar en nosotros.</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-  }
-
+  
   private generateCancellationEmail(data: AppointmentEmailData, reason?: string): string {
     const formattedDate = new Date(data.date).toLocaleDateString('es-ES', {
       weekday: 'long',
