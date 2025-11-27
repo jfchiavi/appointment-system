@@ -3,21 +3,34 @@ import React from 'react';
 import { useAppointment } from '../../hooks/useAppointment';
 import { Button } from '../common/Button';
 import { MapPin, Calendar, Clock, User, Mail, Phone } from 'lucide-react';
+import { LoadingSpinner } from '../common/LoadingSpinner';
 
 export const AppointmentSummary: React.FC = () => {
   const { state, actions } = useAppointment();
 
-  // En una implementación real, estos datos vendrían de APIs
+  console.log('📍 AppointmentSummary - Estado completo:', state);
+  console.log('📍 AppointmentSummary - Provincias:', state.provinces);
+  console.log('📍 AppointmentSummary - Branches:', state.branches);
+  console.log('📍 AppointmentSummary - Professionals:', state.professionals);
+  console.log('📍 AppointmentSummary - AppointmentData:', state.appointmentData);
+
+  // TODO:En una implementación real, estos datos vendrían de APIs
   const getCurrentProvince = () => {
-    return state.provinces.find(p => p.id === state.appointmentData.provinceId);
+     const province = state.provinces.find(p => p.id === state.appointmentData.provinceId || p._id === state.appointmentData.provinceId);
+    console.log('📍 Provincia encontrada:', province);
+    return province;
   };
 
   const getCurrentBranch = () => {
-    return state.branches.find(b => b.id === state.appointmentData.branchId);
+    const branch = state.branches.find(b => b.id === state.appointmentData.branchId || b._id === state.appointmentData.branchId);
+    console.log('📍 Sucursal encontrada:', branch);
+    return branch;
   };
 
   const getCurrentProfessional = () => {
-    return state.professionals.find(p => p.id === state.appointmentData.professionalId);
+    const professional = state.professionals.find(p => p.id === state.appointmentData.professionalId || p._id === state.appointmentData.professionalId);
+    console.log('📍 Profesional encontrado:', professional);
+    return professional;
   };
 
   const handleConfirm = async () => {
@@ -42,6 +55,45 @@ export const AppointmentSummary: React.FC = () => {
   const province = getCurrentProvince();
   const branch = getCurrentBranch();
   const professional = getCurrentProfessional();
+
+    // ✅ Si no hay datos, mostrar mensaje
+  if (!province || !branch || !professional) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Resumen de tu Cita
+          </h1>
+          <p className="text-gray-600">
+            Revisa los detalles de tu reserva antes de confirmar
+          </p>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+          <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+            ⚠️ Datos Incompletos
+          </h3>
+          <p className="text-yellow-700">
+            No se pudieron cargar todos los datos de la cita. Por favor, vuelve atrás y completa los pasos nuevamente.
+          </p>
+          <div className="mt-4">
+            <Button variant="outline" onClick={handleBack}>
+              Volver Atrás
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+    if (state.loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <LoadingSpinner size="lg" />
+        <span className="ml-3">Cargando resumen...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

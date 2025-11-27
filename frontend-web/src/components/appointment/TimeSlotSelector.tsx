@@ -10,6 +10,7 @@ export const TimeSlotSelector: React.FC = () => {
   const [selectedTime, setSelectedTime] = useState<string>('');
 
   const handleTimeSelect = (timeSlot: string) => {
+    console.log('📍 Horario seleccionado:', timeSlot);
     setSelectedTime(timeSlot);
     actions.setTime(timeSlot);
     actions.nextStep();

@@ -69,6 +69,7 @@ export const appointmentService = {
 
   // Citas
   createAppointment: async (appointment: Omit<Appointment, 'id'>): Promise<Appointment> => {
+    console.log('📍 appointmentService - createAppointment:', appointment);
     const response = await api.post<ApiResponse<Appointment>>('/appointments', appointment);
     return response.data.data;
   },

@@ -73,44 +73,62 @@ const appointmentReducer = (state: AppointmentState, action: AppointmentAction):
       return { ...state, availableSlots: action.payload };
     case 'SET_APPOINTMENT_ID':
       return {...state, appointmentId: action.payload};
+    // case 'SET_PROVINCE':
+    //   return {
+    //     ...state,
+    //     appointmentData: {
+    //       ...state.appointmentData,
+    //       provinceId: action.payload,
+    //       branchId: '',
+    //       professionalId: '',
+    //       date: '',
+    //       time: '',
+    //     },
+    //     branches: [],
+    //     professionals: [],
+    //     availableSlots: [],
+    //   };
     case 'SET_PROVINCE':
-      return {
-        ...state,
-        appointmentData: {
-          ...state.appointmentData,
-          provinceId: action.payload,
-          branchId: '',
-          professionalId: '',
-          date: '',
-          time: '',
-        },
-        branches: [],
-        professionals: [],
-        availableSlots: [],
+      console.log('📍 Reducer - SET_PROVINCE:', action.payload);
+      return { 
+        ...state, 
+        appointmentData: { ...state.appointmentData, provinceId: action.payload }
       };
+    // case 'SET_BRANCH':
+    //   return {
+    //     ...state,
+    //     appointmentData: {
+    //       ...state.appointmentData,
+    //       branchId: action.payload,
+    //       professionalId: '',
+    //       date: '',
+    //       time: '',
+    //     },
+    //     professionals: [],
+    //     availableSlots: [],
+    //   };
     case 'SET_BRANCH':
-      return {
-        ...state,
-        appointmentData: {
-          ...state.appointmentData,
-          branchId: action.payload,
-          professionalId: '',
-          date: '',
-          time: '',
-        },
-        professionals: [],
-        availableSlots: [],
+      console.log('📍 Reducer - SET_BRANCH:', action.payload);
+      return { 
+        ...state, 
+        appointmentData: { ...state.appointmentData, branchId: action.payload }
       };
+    // case 'SET_PROFESSIONAL':
+    //   return {
+    //     ...state,
+    //     appointmentData: {
+    //       ...state.appointmentData,
+    //       professionalId: action.payload,
+    //       date: '',
+    //       time: '',
+    //     },
+    //     availableSlots: [],
+    //   };
     case 'SET_PROFESSIONAL':
-      return {
-        ...state,
-        appointmentData: {
-          ...state.appointmentData,
-          professionalId: action.payload,
-          date: '',
-          time: '',
-        },
-        availableSlots: [],
+      console.log('📍 Reducer - SET_PROFESSIONAL:', action.payload);
+      return { 
+        ...state, 
+        appointmentData: { ...state.appointmentData, professionalId: action.payload }
       };
     case 'SET_DATE':
       return {

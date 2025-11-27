@@ -9,6 +9,7 @@ export const BranchSelector: React.FC = () => {
   const { state, actions } = useAppointment();
 
   const handleBranchSelect = (branchId: string) => {
+    console.log('📍 Branch seleccionada:', branchId);
     actions.setBranch(branchId);
     actions.loadProfessionals(branchId);
     actions.nextStep();
