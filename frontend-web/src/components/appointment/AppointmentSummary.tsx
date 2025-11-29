@@ -4,6 +4,7 @@ import { useAppointment } from '../../hooks/useAppointment';
 import { Button } from '../common/Button';
 import { MapPin, Calendar, Clock, User, Mail, Phone } from 'lucide-react';
 import { LoadingSpinner } from '../common/LoadingSpinner';
+import { formatDate } from '../../utils/formatters';
 
 export const AppointmentSummary: React.FC = () => {
   const { state, actions } = useAppointment();
@@ -170,12 +171,7 @@ export const AppointmentSummary: React.FC = () => {
               <div>
                 <p className="font-medium">Fecha</p>
                 <p className="text-sm text-gray-600">
-                  {new Date(state.appointmentData.date).toLocaleDateString('es-ES', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {formatDate(state.appointmentData.date)}
                 </p>
               </div>
             </div>

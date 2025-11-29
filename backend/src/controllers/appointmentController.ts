@@ -21,9 +21,6 @@ export const getAvailableSlots = async (req: Request, res: Response) => {
       });
     }
 
-    console.log('📍 appointmentController.getAvailableSlots - professionalId:', professionalId);
-    console.log('📍 appointmentController.getAvailableSlots - date:', date);
-
     // Verificar que el profesional existe
     const professional = await Professional.findById(professionalId);
     if (!professional) {

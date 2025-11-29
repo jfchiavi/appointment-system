@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../common/Button';
 import { CheckCircle, Calendar, MapPin, User } from 'lucide-react';
+import { formatDate } from '../../utils/formatters';
 
 interface AppointmentSuccessProps {
   appointmentId: string;
@@ -11,6 +12,8 @@ interface AppointmentSuccessProps {
     date: string;
     time: string;
     professionalName: string;
+    professionalSpeciality: string;
+    branchAdress: string;
     branchName: string;
     amount?: number;
   };
@@ -18,7 +21,7 @@ interface AppointmentSuccessProps {
 }
 
 export const AppointmentSuccess: React.FC<AppointmentSuccessProps> = ({
-  appointmentId,
+  //appointmentId,
   appointmentDetails,
   onNewAppointment // ✅ Recibir callback
 }) => {
@@ -38,13 +41,6 @@ export const AppointmentSuccess: React.FC<AppointmentSuccessProps> = ({
   const handleBackToHome = () => {
     navigate('/');
   };
-
-  const formattedDate = new Date(appointmentDetails.date).toLocaleDateString('es-ES', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12">
@@ -69,39 +65,45 @@ export const AppointmentSuccess: React.FC<AppointmentSuccessProps> = ({
           </h2>
           
           <div className="space-y-4">
-            <div className="flex justify-between">
+            {/* <div className="flex justify-between">
               <span className="text-gray-600">Número de reserva:</span>
               <span className="font-mono font-medium">{appointmentId}</span>
-            </div>
+            </div> */}
             
             <div className="flex items-center">
               <User className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Paciente:</span>
-              <span className="font-medium ml-2">{appointmentDetails.clientName}</span>
+              <span className="font-normal ml-2">{appointmentDetails.clientName}</span>
             </div>
             
             <div className="flex items-center">
               <Calendar className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Fecha:</span>
-              <span className="font-medium ml-2">{formattedDate}</span>
+              <span className="font-normal ml-2">{formatDate(appointmentDetails.date)}</span>
             </div>
             
             <div className="flex items-center">
               <Calendar className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Hora:</span>
-              <span className="font-medium ml-2">{appointmentDetails.time}</span>
+              <span className="font-normal ml-2">{appointmentDetails.time}</span>
             </div>
             
             <div className="flex items-center">
               <User className="w-4 h-4 mr-2 text-gray-500" />
               <span className="text-gray-600">Profesional:</span>
-              <span className="font-medium ml-2">{appointmentDetails.professionalName}</span>
+              <div>
+                <p className="font-medium ml-2">{appointmentDetails.professionalName}</p>
+                <p className="text-sm text-gray-600 ml-2">{appointmentDetails.professionalSpeciality}</p>
+              </div>
             </div>
             
             <div className="flex items-center">
-              <MapPin className="w-4 h-4 mr-2 text-gray-500" />
-              <span className="text-gray-600">Sucursal:</span>
-              <span className="font-medium ml-2">{appointmentDetails.branchName}</span>
+                <MapPin className="w-4 h-4 mr-2 text-gray-500" />
+                <span className="text-gray-600">Sucursal:</span>  
+              <div>
+                <p className="font-medium ml-2">{appointmentDetails.branchName}</p>
+                <p className="text-sm text-gray-600 ml-2">{appointmentDetails.branchAdress}</p>
+              </div>
             </div>
           </div>
         </div>

@@ -1,7 +1,10 @@
 // src/hooks/useAppointment.ts
+import moment from 'moment';
 import { useAppointment as useAppointmentContext } from '../contexts/AppointmentContext';
 import { appointmentService } from '../services/appointmentService';
+
 import { useApi } from './useApi';
+
 
 export const useAppointment = () => {
   const { state, dispatch } = useAppointmentContext();
@@ -16,7 +19,6 @@ export const useAppointment = () => {
       const provinces = await appointmentService.getProvinces();
       dispatch({ type: 'SET_PROVINCES', payload: provinces });
     } catch (error) {
-      console.error('📍 Error en loadBranches:', error); // ✅ DEBUG
       dispatch({ type: 'SET_ERROR', payload: 'Error al cargar provincias' });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -24,7 +26,6 @@ export const useAppointment = () => {
   };
 
   const loadBranches = async (provinceId: string) => {
-    console.log('📍 useAppointment - loadBranches provinceId:', provinceId); // ✅ DEBUG
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const branches = await appointmentService.getBranchesByProvince(provinceId);
@@ -37,7 +38,6 @@ export const useAppointment = () => {
   };
 
   const loadProfessionals = async (branchId: string) => {
-    console.log('📍 useAppointment - loadBranches provinceId:', branchId); // ✅ DEBUG
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const professionals = await appointmentService.getProfessionalsByBranch(branchId);
@@ -62,9 +62,16 @@ export const useAppointment = () => {
   };
 
   const createAppointment = async () => {
+    //TODO: ver donde poner la duracion de la cita como default: durationMinutesDefault
+    const durationMinutesDefault = 30;
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      
+      const professional = state.professionals?.find(prof => prof.id === state.appointmentData.professionalId);
+      const durationMinutes = professional?.appointmentDuration || durationMinutesDefault;
+      const endTimeAux = moment(state.appointmentData.time, 'HH:mm');
+      const endTimeAuxAdded = endTimeAux.add(durationMinutes, 'minutes');
+      const newEndTime = endTimeAuxAdded.format("HH:mm");
+
       const appointmentData = {
         clientName: state.appointmentData.clientInfo.name,
         clientEmail: state.appointmentData.clientInfo.email,
@@ -73,22 +80,25 @@ export const useAppointment = () => {
         branchId: state.appointmentData.branchId,
         date: state.appointmentData.date,
         startTime: state.appointmentData.time,
-        endTime: state.appointmentData.time,
+        endTime: newEndTime,
         notes: state.appointmentData.clientInfo.notes,
         status: 'confirmed' as const
       };
-
-      console.log('📍 Creando cita:', appointmentData);
       
       const appointment = await appointmentService.createAppointment(appointmentData);
       
-      console.log('📍 Cita creada exitosamente:', appointment);
       
       dispatch({ type: 'SET_APPOINTMENT_ID', payload: appointment.id || appointment._id || appointment._id! });
       
     } catch (error) {
       console.error('📍 Error creando cita:', error);
-      dispatch({ type: 'SET_ERROR', payload: 'Error al crear la cita' });
+
+      // ✅ Mostrar error específico al usuario
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Error al crear la cita';
+
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
       throw error;
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });

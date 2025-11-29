@@ -29,6 +29,7 @@ export const TimeSlotSelector: React.FC = () => {
     );
   }
 
+  // ✅ FILTRAR: Mostrar solo los horarios disponibles
   const availableSlots = state.availableSlots.filter(slot => slot.isAvailable);
 
   return (
@@ -58,15 +59,45 @@ export const TimeSlotSelector: React.FC = () => {
               <div className="font-medium">
                 {slot.startTime}
               </div>
+              <div className="text-xs text-green-600 mt-1">
+                ✅ Disponible
+              </div>
             </button>
           ))}
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">No hay horarios disponibles para esta fecha</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-4">
+            <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+              ⚠️ No hay horarios disponibles
+            </h3>
+            <p className="text-yellow-700">
+              No hay horarios disponibles para esta fecha. Por favor, selecciona otra fecha.
+            </p>
+          </div>
           <Button variant="outline" onClick={handleBack}>
             Elegir otra fecha
           </Button>
+        </div>
+      )}
+
+      {/* Mostrar horarios no disponibles (solo para debugging) */}
+      {process.env.NODE_ENV === 'development' && state.availableSlots.some(slot => !slot.isAvailable) && (
+        <div className="mt-8 p-4 bg-gray-100 rounded-lg">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">🔍 Debug: Horarios No Disponibles</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+            {state.availableSlots
+              .filter(slot => !slot.isAvailable)
+              .map((slot, index) => (
+                <div
+                  key={`unavailable-${index}`}
+                  className="p-2 border border-red-300 bg-red-50 rounded text-center text-xs text-red-700"
+                >
+                  {slot.startTime}
+                  <div className="text-red-500">❌ Ocupado</div>
+                </div>
+              ))}
+          </div>
         </div>
       )}
 

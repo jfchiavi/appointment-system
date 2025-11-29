@@ -13,6 +13,13 @@ export const AppointmentConfirmation: React.FC = () => {
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [professionalName, setProfessionalName] = useState<string>();
+  const [branchName, setBranchName] = useState<string>();
+  const [professionalSpeciality, setProfessionalSpecialty] = useState<string>();
+  const [branchAdress, setBranchAdress] = useState<string>();
+  
+
+  setProfessionalSpecialty
 
     // ✅ Función para limpiar y empezar nueva cita
   const handleNewAppointment = () => {
@@ -21,9 +28,19 @@ export const AppointmentConfirmation: React.FC = () => {
     navigate('/reservar'); // ✅ Navegar al inicio del flujo
   };
 
+  const getJsonDataFromObject = (jsonString: any): any => {
+    try {
+      const obj = JSON.parse(JSON.stringify(jsonString)); 
+      return obj
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+      return { name: 'Error parsing JSON' };
+    }
+  };
+
   useEffect(() => {
     const fetchAppointment = async () => {
-            // ✅ Usar el appointmentId del contexto
+      // ✅ Usando el appointmentId del contexto
       const appointmentId = state.appointmentId;
 
       if (!appointmentId) {
@@ -33,34 +50,19 @@ export const AppointmentConfirmation: React.FC = () => {
       }
 
       try {
-        console.log('📍 Buscando cita con ID:', appointmentId);
         const appointmentData = await appointmentService.getAppointment(appointmentId);
-        console.log('📍 Cita encontrada:', appointmentData);
-        
         setAppointment(appointmentData);
+        const datosBranch = getJsonDataFromObject(appointmentData.branchId);
+        const datosProfessional = getJsonDataFromObject(appointmentData.professionalId);
+        setBranchName(datosBranch.name);
+        setBranchAdress(datosBranch.address);
+        setProfessionalName(datosProfessional.name);
+        setProfessionalSpecialty(datosProfessional.specialty);
+        setError(null);
+
       } catch (err) {
         console.error('📍 Error fetching appointment:', err);
         setError('Error al cargar los detalles de la cita');
-
-        // Fallback para desarrollo
-        if (process.env.NODE_ENV === 'development') {
-          console.log('📍 Usando datos mock para desarrollo');
-          const mockAppointment: Appointment = {
-            id: appointmentId,
-            clientName: state.appointmentData.clientInfo.name,
-            clientEmail: state.appointmentData.clientInfo.email,
-            clientPhone: state.appointmentData.clientInfo.phone,
-            professionalId: state.appointmentData.professionalId,
-            branchId: state.appointmentData.branchId,
-            date: state.appointmentData.date,
-            startTime: state.appointmentData.time,
-            endTime: state.appointmentData.time,
-            status: 'confirmed'
-          };
-          setAppointment(mockAppointment);
-          setError(null);
-        }
-
       } finally {
         setLoading(false);
       }
@@ -109,13 +111,15 @@ export const AppointmentConfirmation: React.FC = () => {
       </div>
     );
   }
-//TODO: revisar professionalName y branchName si vienen de la DB
+
   const appointmentDetails = {
     clientName: appointment.clientName,
     date: appointment.date,
     time: appointment.startTime,
-    professionalName: 'Profesional test', // En real, buscarías el nombre del profesional
-    branchName: 'Sucursal test', // En real, buscarías el nombre de la sucursal
+    professionalName: professionalName??"Nombre no disponible", // por si no llega el nombre
+    branchName: branchName??"Nombre no disponible", // igual que el de arriba
+    branchAdress: branchAdress??"Dirección no disponible",
+    professionalSpeciality: professionalSpeciality??"Especialidad no disponible",
     amount: appointment.amount
   };
 

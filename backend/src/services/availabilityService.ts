@@ -18,13 +18,12 @@ interface WorkingHours {
 }
 
 export class AvailabilityService {
+
   async getAvailableSlots(professionalId: string, date: string): Promise<TimeSlot[]> {
     // ✅ Validaciones adicionales
     if (!professionalId || !date) {
       throw new Error('professionalId y date son requeridos');
     }
-    console.log('📍 AvailabilityService - professionalId:', professionalId);
-    console.log('📍 AvailabilityService - date:', date);
 
     const professional = await Professional.findById(professionalId);
     
@@ -33,20 +32,15 @@ export class AvailabilityService {
       throw new Error('Profesional no encontrado');
     }
 
-    console.log('📍 Professional encontrado:', professional.name);
-    console.log('📍 Working hours:', professional.workingHours);
-
     const targetDate = moment(date); 
     const dayOfWeek = targetDate.day(); // 0=Domingo, 1=Lunes, etc.
     console.log('📍 Day of week (moment):', dayOfWeek);
-
     console.log('📍 Day of week:', dayOfWeek, targetDate.format('dddd'));
 
     // Obtener horario del profesional para ese día con tipado explícito
     const daySchedule = professional.workingHours.find(
       (wh: WorkingHours) => wh.dayOfWeek === dayOfWeek
     );
-    console.log('📍 Day schedule encontrado:', daySchedule);
     
     if (!daySchedule || !daySchedule.startTime) {
       console.log('❌ No trabaja este día o no tiene horario');
@@ -54,14 +48,7 @@ export class AvailabilityService {
     }
 
     // Obtener citas existentes
-    const existingAppointments = await Appointment.find({
-      professionalId,
-      date: targetDate.toDate(),
-      status: { $in: ['pending', 'confirmed'] }
-    });
-
-    console.log('📍 Citas existentes:', existingAppointments.length);
-    console.log('📍 Citas:', existingAppointments);
+    const existingAppointments = await this.getExistingAppointments(professionalId, date);
 
     // Generar slots disponibles
     const availableSlots = this.generateTimeSlots(
@@ -72,8 +59,6 @@ export class AvailabilityService {
       daySchedule.breakStart,
       daySchedule.breakEnd
     );
-    console.log('📍 Slots disponibles generados:', availableSlots.length);
-    console.log('📍 Slots:', availableSlots);
 
     return availableSlots;
   }
@@ -89,16 +74,14 @@ export class AvailabilityService {
     const slots: TimeSlot[] = [];
     const start = moment(startTime, 'HH:mm');
     const end = moment(endTime, 'HH:mm');
-    
+
     // Función helper para crear moment objects de forma segura
     const createMoment = (timeString: string | null | undefined): moment.Moment | null => {
       if (!timeString) return null;
       return moment(timeString, 'HH:mm');
     };
-    
     const breakStartMoment = createMoment(breakStart);
     const breakEndMoment = createMoment(breakEnd);
-
     let currentTime = start.clone();
 
     while (currentTime < end) {
@@ -106,13 +89,11 @@ export class AvailabilityService {
       
       // Verificar si el slot está dentro del horario de break
       const isDuringBreak = this.isDuringBreak(currentTime, slotEnd, breakStartMoment, breakEndMoment);
-
+      
       if (!isDuringBreak && slotEnd <= end) {
         const slotStartStr = currentTime.format('HH:mm');
         const slotEndStr = slotEnd.format('HH:mm');
-
         const isOccupied = this.isSlotOccupied(currentTime, slotEnd, existingAppointments);
-
         slots.push({
           startTime: slotStartStr,
           endTime: slotEndStr,
@@ -142,11 +123,13 @@ export class AvailabilityService {
     slotEnd: moment.Moment,
     existingAppointments: any[]
   ): boolean {
-    return existingAppointments.some(appointment => {
+    const result = existingAppointments.some(appointment => {
       const appStart = moment(appointment.startTime, 'HH:mm');
       const appEnd = moment(appointment.endTime, 'HH:mm');
+      //return 13:30 < 13:00 && 14:00 > 13:30
       return slotStart < appEnd && slotEnd > appStart;
     });
+    return result;
   }
 
   async isTimeSlotAvailable(
@@ -155,15 +138,11 @@ export class AvailabilityService {
     startTime: string,
     endTime: string
   ): Promise<boolean> {
-    const existingAppointment = await Appointment.findOne({
-      professionalId,
-      date: new Date(date),
-      startTime,
-      endTime,
-      status: { $in: ['pending', 'confirmed'] }
-    });
-
-    return !existingAppointment;
+    const existingAppointments = await this.getExistingAppointments(professionalId, date);
+    const start = moment(startTime, 'HH:mm');
+    const end = moment(endTime, 'HH:mm');
+    const isOccupied = this.isSlotOccupied(start, end, existingAppointments);
+    return !isOccupied;
   }
 
   async getProfessionalWorkingHours(professionalId: string, date: string) {
@@ -174,5 +153,13 @@ export class AvailabilityService {
     const dayOfWeek = targetDate.day();
 
     return professional.workingHours.find((wh: WorkingHours) => wh.dayOfWeek === dayOfWeek);
+  }
+
+  private getExistingAppointments(professionalId: string, date: string) {
+    return Appointment.find({
+      professionalId,
+      date: new Date(date),
+      status: { $in: ['pending', 'confirmed'] }
+    });
   }
 }
